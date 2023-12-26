@@ -13,6 +13,7 @@ tokio = { version = "1.35.0", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.5.0", features = ["full"] }
 serde = "1.0.193"
 rand = "0.8.5"
+open = "5.0.1"
 
 [[bin]]
 name = "demo"

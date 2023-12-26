@@ -27,7 +27,11 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(ADR).await.unwrap();
     println!("Started server at {ADR}");
     println!("Visit http://{ADR}/index.html");
-    axum::serve(listener, app).await.unwrap();
+
+    let serve =axum::serve(listener, app);
+
+    open::that(format!("http://{ADR}/index.html")).unwrap();
+    serve.await.unwrap();
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
