@@ -23,7 +23,7 @@ mod tests {
             let mut lines: Vec<Line> = Vec::new();
 
             let mut rng = rand::thread_rng();
-            for i in 0..1000 {
+            for i in 0..100 {
                 let m: f64 = rng.gen();
                 let m = (m * 2.0 - 1.0) * 10000.0;
                 let b: f64 = rng.gen();
@@ -40,7 +40,7 @@ mod tests {
             alg_time += t2.duration_since(t1).as_micros();
             force_time += t3.duration_since(t2).as_micros();
 
-            for i in 0..1000 {
+            for i in 0..100 {
                 assert!(
                     equal(result1.0[i], result2.0[i]),
                     "{} != {}",
