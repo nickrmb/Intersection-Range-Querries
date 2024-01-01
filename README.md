@@ -24,11 +24,14 @@ Intersection Range Querries
 
 An extreme intersection point (eip) of a line is an outer intersection point, hence all other intersections lie on one side of the point.
 
-<img src="img/eip.svg" width="100%" style="margin-bottom: 10px">
+<p>
+    <img src="img/eip.svg" width="100%" style="margin-bottom: 10px">
+    <em>The red points are eip's of the green line.</em>
+</p>
 
 The computation of all eip's is a key part of IRQ.
-
-We have implemented a $\mathcal{O}(n\; \log^2\;n)$ algorithm.
+<br>
+We have implemented a $\mathcal{O}(n \log^2 n)$ algorithm.
 To check correctness we can run the following command to get a visual interactive demo:
 ```sh
 cargo run --bin eip-demo
