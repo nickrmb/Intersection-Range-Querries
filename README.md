@@ -17,6 +17,9 @@ Intersection Range Querries
 </pre>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![made-with-rust](https://img.shields.io/badge/Made%20with-Rust-1f425f.svg)](https://www.rust-lang.org/)
+[![cargo](https://img.shields.io/badge/Cargo-1.74.1-darkred.svg
+)](https://crates.io/)
 
 </div>
 
@@ -38,3 +41,5 @@ cargo run --bin eip-demo
 ```
 Alternatively we can run `cargo test eip::tests::correctness -- --exact` to check correctness.
 It creates multiple random instances, applies the algorithm and verifies the result by comparison to a simple $\mathcal{O}(n^2)$ brute-force approach.
+
+For further information on the algorithm look at the report [eip.pdf](reports/eip.pdf).
