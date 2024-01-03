@@ -3,3 +3,12 @@
     width: 900px;
     height: 600px
 }
+
+.instructions {
+    display: flex;
+    flex-direction: column;
+}
+
+.item {
+    margin-bottom: 10px;
+}

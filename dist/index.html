@@ -13,7 +13,28 @@
 <body>
     <main>
         <h1>IRQ - EIP</h1>
-        <canvas id="mcanvas" width="1800" height="1200"></canvas>
+        <div style="display: flex; width: 100%;">
+            <div style="margin-right: 40px;">
+                <canvas id="mcanvas" width="1800" height="1200"></canvas>
+            </div>
+            <div class="instructions">
+                <div class="item">
+                    <h3>Create new line</h3>
+                    Left click onto the canvas to anchor a new line.<br>
+                    Then left click again to add the displayed line.<br>
+                    If the mouse position is close to the anchored position, the line creation is cancelled.<br>
+                </div>
+                <div class="item">
+                    <h3>EIP computation</h3>
+                    Each time a line is added the algorithm is executed and computed points are displayed using small red dots.
+                </div>
+                <div class="item">
+                    <h3>Clear lines</h3>
+                    Double click anywhere to remove all lines.
+                </div>
+            </div>
+        </div>
+
     </main>
     <script src="script.js"></script>
 </body>
