@@ -31,5 +31,5 @@ fn main() {
 
     // println!("{:?}", intersections(&lines));
 
-    println!("{:?}", compute_eip(&mut lines));
+    println!("{:?}", eip::block_algorithm(&mut lines));
 }

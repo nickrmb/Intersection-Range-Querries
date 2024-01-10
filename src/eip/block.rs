@@ -6,6 +6,7 @@ mod tests {
     use super::*;
     use rand::Rng;
     use std::time::Instant;
+    use eip::force_eip;
 
     const DELTA: f64 = 0.00000001;
 
@@ -34,7 +35,7 @@ mod tests {
             }
 
             let t1 = Instant::now();
-            let result1 = compute_eip(&mut lines);
+            let result1 = block_algorithm(&mut lines);
             let t2 = Instant::now();
             let result2 = force_eip(&lines);
             let t3 = Instant::now();
@@ -62,34 +63,7 @@ mod tests {
     }
 }
 
-pub fn force_eip(lines: &Vec<Line>) -> (Vec<f64>,Vec<f64>) {
-    let n = lines.len();
-    let mut left: Vec<f64> = vec![0.0; n];
-    let mut right: Vec<f64> = vec![0.0; n];
-
-    for (i, l1) in lines.iter().enumerate() {
-        let mut x_min = f64::MAX;
-        let mut x_max = f64::MIN;
-        for l2 in &lines[0..i] {
-            if let Some(x) = l1.intersection_with_line(l2) {
-                x_min = x_min.min(x);
-                x_max = x_max.max(x);
-            }
-        }
-        for l2 in &lines[i + 1..] {
-            if let Some(x) = l1.intersection_with_line(l2) {
-                x_min = x_min.min(x);
-                x_max = x_max.max(x);
-            }
-        }
-        left[lines[i].idx] = x_min;
-        right[lines[i].idx] = x_max;
-    }
-
-    (left,right)
-}
-
-pub fn compute_eip(lines: &mut Vec<Line>) -> (Vec<f64>,Vec<f64>) {
+pub fn block_algorithm(lines: &mut Vec<Line>) -> (Vec<f64>,Vec<f64>) {
     let left = compute_eip_left(lines);
     
     for i in 0..lines.len() {
@@ -104,7 +78,7 @@ pub fn compute_eip(lines: &mut Vec<Line>) -> (Vec<f64>,Vec<f64>) {
     (left,right)
 }
 
-pub fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
+fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
     let n = lines.len();
 
     // sort by slope

@@ -22,9 +22,9 @@ fn main() {
         }
 
         let t1 = Instant::now();
-        let _ = compute_eip(&mut lines);
+        let _ = eip::block_algorithm(&mut lines);
         let t2 = Instant::now();
-        let _ = force_eip(&lines);
+        let _ = eip::force_eip(&lines);
         let t3 = Instant::now();
 
         let alg_time_cur = t2.duration_since(t1).as_secs_f64() * 1000.0;

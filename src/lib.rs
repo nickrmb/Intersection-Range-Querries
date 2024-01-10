@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 pub mod eip;
-pub use eip::*;
 
 #[cfg(test)]
 pub mod tests {

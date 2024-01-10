@@ -1,6 +1,6 @@
 use axum::response::IntoResponse;
 use axum::{http::StatusCode, routing::post, Json, Router};
-use irq::{compute_eip, Line};
+use irq::{eip::block_algorithm, Line};
 use serde::{Deserialize, Serialize};
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -57,7 +57,7 @@ async fn handle(Json(data): Json<Data>) -> impl IntoResponse {
     for (i, line) in data.lines.iter().enumerate() {
         d.push(Line::new(line.m, line.b, i));
     }
-    let eip = compute_eip(&mut d);
+    let eip = block_algorithm(&mut d);
 
     let mut out: Vec<Vec<f64>> = Vec::new();
 
