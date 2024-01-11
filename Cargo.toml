@@ -18,3 +18,7 @@ open = "5.0.1"
 [[bin]]
 name = "eip-demo"
 path = "src/bin/eip_demo.rs"
+
+[[bin]]
+name = "runtime"
+path = "src/bin/runtime.rs"

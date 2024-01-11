@@ -4,7 +4,7 @@ use std::time::Instant;
 
 fn main() {
 
-    println!("len,algorithm,force");
+    println!("len,force,block,envelope");
 
     for i in 2..=200 {
 
@@ -26,13 +26,16 @@ fn main() {
         let t2 = Instant::now();
         let _ = eip::force_eip(&lines);
         let t3 = Instant::now();
+        let _ = eip::envelope_algorithm(&mut lines);
+        let t4 = Instant::now();
 
-        let alg_time_cur = t2.duration_since(t1).as_secs_f64() * 1000.0;
+        let block_time_cur = t2.duration_since(t1).as_secs_f64() * 1000.0;
         let force_time_cur = t3.duration_since(t2).as_secs_f64() * 1000.0;
+        let env_time_cur = t4.duration_since(t3).as_secs_f64() * 1000.0;
 
-        eprintln!("Computed {i} in {} ms", (alg_time_cur + force_time_cur).floor());
+        eprintln!("Computed {i} in {} ms", (block_time_cur + force_time_cur + env_time_cur).floor());
 
-        println!("{k},{},{}", alg_time_cur, force_time_cur);
+        println!("{k},{},{},{}", force_time_cur, block_time_cur, env_time_cur);
     }
 
 }

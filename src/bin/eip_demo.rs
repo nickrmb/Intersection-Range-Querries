@@ -25,12 +25,12 @@ async fn main() {
 
     // run our app with hyper
     let listener = tokio::net::TcpListener::bind(ADR).await.unwrap();
-    println!("Started server at {ADR}");
-    println!("Visit http://{ADR}/index.html");
+    println!("Started server: http://{ADR}/");
+    println!("crtl + c to close the server");
 
     let serve =axum::serve(listener, app);
 
-    open::that(format!("http://{ADR}/index.html")).unwrap();
+    open::that(format!("http://{ADR}/")).unwrap();
     serve.await.unwrap();
 }
 
@@ -51,7 +51,7 @@ struct Result {
 }
 
 async fn handle(Json(data): Json<Data>) -> impl IntoResponse {
-    println!("{:?}", data);
+    // println!("{:?}", data);
 
     let mut d: Vec<Line> = Vec::new();
     for (i, line) in data.lines.iter().enumerate() {

@@ -3,6 +3,9 @@ use crate::*;
 mod block;
 pub use block::*;
 
+mod envelope;
+pub use envelope::*;
+
 pub fn force_eip(lines: &Vec<Line>) -> (Vec<f64>,Vec<f64>) {
     let n = lines.len();
     let mut left: Vec<f64> = vec![0.0; n];

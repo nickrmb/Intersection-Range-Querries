@@ -12,7 +12,6 @@ mod tests {
 
     fn equal(x1: f64, x2: f64) -> bool {
         x1 - DELTA <= x2 && x1 + DELTA >= x2
-        // x1 == x2
     }
 
     #[test]
