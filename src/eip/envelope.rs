@@ -14,7 +14,7 @@ mod tests {
     }
 
     #[test]
-    fn correctness() {
+    fn eip_correctness() {
         for _ in 0..100 {
             let k = 500;
             let mut lines: Vec<Line> = Vec::new();
@@ -62,6 +62,7 @@ impl<'a> PolyChain<'a> {
         }
     }
 
+    // construction of next B given next line
     fn next_b(&mut self, next: &'a Line) {
         if self.seg.len() == 0 {
             self.seg.push((next, f64::MIN));
@@ -87,6 +88,7 @@ impl<'a> PolyChain<'a> {
         }
     }
 
+    // construction of previous A given previous line
     fn prev_a(&mut self, prev: &'a Line) -> Vec<(&'a Line, f64)> {
         if self.seg.len() == 0 {
             self.seg.push((prev, f64::MIN));
@@ -115,6 +117,7 @@ impl<'a> PolyChain<'a> {
         }
     }
 
+    // construction of next A given a set of instructions
     fn next_a(&mut self, mut instruction: Vec<(&'a Line, f64)>) {
         self.seg.pop();
 

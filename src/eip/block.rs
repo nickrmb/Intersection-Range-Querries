@@ -4,9 +4,8 @@ use priority_queue::PriorityQueue;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::Rng;
-    use std::time::Instant;
     use eip::force_eip;
+    use rand::Rng;
 
     const DELTA: f64 = 0.00000001;
 
@@ -15,13 +14,10 @@ mod tests {
     }
 
     #[test]
-    fn correctness() {
+    fn eip_correctness() {
         let n = 100;
         let k = 100;
-        let mut alg_time: u128 = 0;
-        let mut force_time: u128 = 0;
         for _ in 0..n {
-
             let mut lines: Vec<Line> = Vec::new();
 
             let mut rng = rand::thread_rng();
@@ -33,14 +29,8 @@ mod tests {
                 lines.push(Line { m, b, idx: i });
             }
 
-            let t1 = Instant::now();
             let result1 = block_algorithm(&mut lines);
-            let t2 = Instant::now();
             let result2 = force_eip(&lines);
-            let t3 = Instant::now();
-
-            alg_time += t2.duration_since(t1).as_micros();
-            force_time += t3.duration_since(t2).as_micros();
 
             for i in 0..k {
                 assert!(
@@ -57,14 +47,192 @@ mod tests {
                 );
             }
         }
-        println!("algorithm time: {alg_time} microseconds");
-        println!("force time: {force_time} microseconds");
     }
 }
 
-pub fn block_algorithm(lines: &mut Vec<Line>) -> (Vec<f64>,Vec<f64>) {
+#[derive(Debug)]
+pub struct Envelope<'a> {
+    pub seg: Vec<(f64, f64, &'a Line)>,
+}
+
+#[derive(Debug)]
+pub struct Block<'a> {
+    pub upper_envelope: Envelope<'a>,
+    pub lower_envelope: Envelope<'a>,
+    pub upper_idx: usize,
+    pub lower_idx: usize,
+}
+
+impl Envelope<'_> {
+    pub fn intersection_with_line(&self, line: &Line) -> Option<(usize, f64)> {
+        // binary search
+
+        let mut l: usize = 0;
+        let mut r: usize = self.seg.len() - 1;
+
+        while l <= r {
+            let m = (l + r) / 2;
+            let (xl, xr, other) = self.seg[m];
+
+            // intersection with segment line
+            let x = line.intersection_with_line(&other);
+
+            if let Some(x) = x {
+                // has intersection
+                if xl <= x && xr >= x {
+                    // hit segment
+                    return Some((m, x));
+                }
+
+                // miss segment
+                if x < xl {
+                    // search left
+                    if m == 0 {
+                        break;
+                    }
+                    r = m - 1;
+                } else {
+                    // search right
+                    l = m + 1;
+                }
+                continue;
+            } else {
+                // parallel
+                return None;
+            }
+        }
+
+        None
+    }
+
+    pub fn intersection_with_envelope(&self, other: &Envelope) -> Option<(usize, usize, f64)> {
+        // all slopes of other are more steep than self
+
+        // binary search on segments of other
+
+        let mut l: usize = 0;
+        let mut r: usize = other.seg.len() - 1;
+
+        while l <= r {
+            let m = (l + r) / 2;
+
+            let (xl, xr, line) = other.seg[m];
+
+            // intersection with current segment
+            let x = self.intersection_with_line(line); // hit x
+
+            if let Some((p, x)) = x {
+                if x >= xl && x <= xr {
+                    return Some((p, m, x));
+                }
+                if x < xl {
+                    // intersection to left
+                    r = m - 1;
+                } else {
+                    // intersection to right
+                    l = m + 1;
+                }
+            } else {
+                println!("{:?}\n{:?}", line, self);
+                assert!(false, "Should have not happened");
+            }
+        }
+
+        None
+    }
+}
+
+impl Block<'_> {
+    pub fn merge<'a>(upper: &mut Block<'a>, mut lower: Block<'a>) {
+        upper.upper_idx = lower.upper_idx;
+
+        // Update upper envelope
+
+        // upper hit
+        let (i, j, x) = match upper
+            .upper_envelope
+            .intersection_with_envelope(&lower.upper_envelope)
+        {
+            Some(a) => a,
+            None => todo!("Should have not happened"),
+        };
+
+        // slice segments
+        upper.upper_envelope.seg.truncate(i + 1);
+        lower.upper_envelope.seg.drain(0..j);
+
+        // change edge points accordingly
+        upper.upper_envelope.seg[i].1 = x;
+        lower.upper_envelope.seg[0].0 = x;
+
+        // append envelopes
+        upper
+            .upper_envelope
+            .seg
+            .append(&mut lower.upper_envelope.seg);
+
+        // update lower envelope
+
+        // lower hit
+        let (i, j, x) = match lower
+            .lower_envelope
+            .intersection_with_envelope(&upper.lower_envelope)
+        {
+            Some(a) => a,
+            None => todo!("Should have not happened"),
+        };
+
+        // slice segments
+        lower.lower_envelope.seg.truncate(i + 1);
+        upper.lower_envelope.seg.drain(0..j);
+
+        // change edge points accordingly
+        lower.lower_envelope.seg[i].1 = x;
+        upper.lower_envelope.seg[0].0 = x;
+
+        // append envelopes
+        lower
+            .lower_envelope
+            .seg
+            .append(&mut upper.lower_envelope.seg);
+
+        upper.lower_envelope = lower.lower_envelope;
+    }
+
+    // creates an empty block, used for constant time removal later on
+    pub fn empty<'a>() -> Block<'a> {
+        Block {
+            upper_envelope: Envelope { seg: Vec::new() },
+            lower_envelope: Envelope { seg: Vec::new() },
+            upper_idx: 0,
+            lower_idx: 0,
+        }
+    }
+}
+
+// custom f64 with Ord
+#[derive(Debug)]
+struct F64(f64);
+impl PartialEq for F64 {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl Eq for F64 {}
+impl PartialOrd for F64 {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
+    }
+}
+impl Ord for F64 {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.0.total_cmp(&other.0)
+    }
+}
+
+pub fn block_algorithm(lines: &mut Vec<Line>) -> (Vec<f64>, Vec<f64>) {
     let left = compute_eip_left(lines);
-    
+
     for i in 0..lines.len() {
         lines[i].m *= -1.0;
     }
@@ -74,7 +242,7 @@ pub fn block_algorithm(lines: &mut Vec<Line>) -> (Vec<f64>,Vec<f64>) {
         right[i] = -right[i];
     }
 
-    (left,right)
+    (left, right)
 }
 
 fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
@@ -219,9 +387,7 @@ fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
 
                 if j < i {
                     // update upper envelope
-                    if let Some((p_seg, x_seg)) =
-                        li.intersection_with_envelope(&block.upper_envelope)
-                    {
+                    if let Some((p_seg, x_seg)) = block.upper_envelope.intersection_with_line(&li) {
                         block.upper_envelope.seg.truncate(p_seg + 1);
                         block.upper_envelope.seg[p_seg].1 = x_seg;
                         block.upper_envelope.seg.push((x_seg, f64::MAX, &lines[i]));
@@ -230,9 +396,7 @@ fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
                     }
                 } else {
                     // update lower envelope
-                    if let Some((p_seg, x_seg)) =
-                        li.intersection_with_envelope(&block.lower_envelope)
-                    {
+                    if let Some((p_seg, x_seg)) = block.lower_envelope.intersection_with_line(&li) {
                         block.lower_envelope.seg.truncate(p_seg + 1);
                         block.lower_envelope.seg[p_seg].1 = x_seg;
                         block.lower_envelope.seg.push((x_seg, f64::MAX, &lines[i]));
@@ -286,7 +450,7 @@ fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
             let idx = block.lower_idx - 1;
             let above = &lines[idx];
 
-            let a = above.intersection_with_envelope(&block.upper_envelope);
+            let a = block.upper_envelope.intersection_with_line(&above);
             if let Some((_, x)) = a {
                 let prio = pq.get_priority(&idx);
                 if let Some(F64(prio)) = prio {
@@ -307,7 +471,7 @@ fn compute_eip_left(lines: &mut Vec<Line>) -> Vec<f64> {
             let idx = block.upper_idx + 1;
             let under = &lines[idx];
 
-            let a = under.intersection_with_envelope(&block.lower_envelope);
+            let a = block.lower_envelope.intersection_with_line(&under);
             if let Some((_, x)) = a {
                 let prio = pq.get_priority(&idx);
                 if let Some(F64(prio)) = prio {

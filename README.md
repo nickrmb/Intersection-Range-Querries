@@ -34,12 +34,14 @@ An extreme intersection point (eip) of a line is an outer intersection point, he
 
 The computation of all eip's is a key part of IRQ.
 <br>
-We have implemented a $\mathcal{O}(n \log^2 n)$ algorithm.
-To check correctness we can run the following command to get a visual interactive demo:
-```sh
-cargo run --bin eip-demo
-```
-Alternatively we can run `cargo test eip::tests::correctness -- --exact` to check correctness.
-It creates multiple random instances, applies the algorithm and verifies the result by comparison to a simple $\mathcal{O}(n^2)$ brute-force approach.
+We have implemented two algorithms:
+- Block algorithm: $\mathcal{O}(n \log^2 n)$
+- Envelope algorithm: $\mathcal{O}(n)$
 
-For further information on the algorithm look at the report [eip.pdf](reports/eip.pdf).
+To check correctness we also implemented a simple $\mathcal{O}(n^2)$ brute force algorithm that computes all intersections and checks whether it is an eip of one of the intersecting lines.
+```sh
+cargo test eip_correctness
+```
+It creates multiple random instances, applies the algorithms and verifies the result by comparison to the brute force approach.
+
+For further information on the algorithms look at the report [eip.pdf](reports/eip.pdf).
