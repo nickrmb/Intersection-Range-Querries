@@ -23,6 +23,14 @@ Intersection Range Querries
 
 </div>
 
+## Demo
+
+To get a visual demo of the current progress and get an idea of IRQ run the following command:
+```sh
+cargo run --bin line-halfplane-demo
+```
+The demo currently shows intersection range querries for lines and halfplanes.
+
 ## Extreme Intersection Points
 
 An extreme intersection point (eip) of a line is an outer intersection point, hence all other intersections lie on one side of the point.
