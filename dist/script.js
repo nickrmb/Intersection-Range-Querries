@@ -49,6 +49,7 @@ function clampRect(line, x) {
 }
 
 function draw() {
+    gx.lineWidth = 5;
     gx.clearRect(0, 0, c.width, c.height);
 
     if (halfplane != null) {
@@ -108,16 +109,16 @@ function draw() {
 
     }
 
-    gx.strokeStyle = "black";
+    gx.lineWidth = 5;
+    gx.strokeStyle = "rgb(90, 130, 210)";
     lines.forEach((line) => {
         drawLine(line);
     });
 
     if (halfplane != null) {
         gx.strokeStyle = "rgb(0, 153, 51)";
-        gx.lineWidth = 3;
+        gx.lineWidth = 5;
         drawLine(halfplane);
-        gx.lineWidth = 1;
     }
 
     if (last != null) {
@@ -167,7 +168,7 @@ function makeReq() {
 }
 
 c.addEventListener("click", function (event) {
-
+    
     if (event.altKey) {
         boundsAbove = !boundsAbove;
         last = null;
@@ -217,7 +218,6 @@ c.addEventListener("click", function (event) {
             points = null;
         }
     }
-
 
 });
 

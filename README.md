@@ -25,11 +25,17 @@ Intersection Range Querries
 
 ## Demo
 
-To get a visual demo of the current progress and get an idea of IRQ run the following command:
+<p>
+    <img src="img/irq_example.png" width="100%" style="margin-bottom: 10px">
+    <em>Example IRQ of lines and halfplanes.</em>
+</p>
+
+To get a visual demo of the current progress and to get an idea of IRQ run the following command:
 ```sh
 cargo run --bin line-halfplane-demo
 ```
 The demo currently shows intersection range querries for lines and halfplanes.
+But there exist many other reasonable shapes and structures other than lines and halfplanes that can be used instead in IRQ.
 
 ## Extreme Intersection Points
 
