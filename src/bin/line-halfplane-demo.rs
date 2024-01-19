@@ -1,6 +1,7 @@
 use axum::response::IntoResponse;
 use axum::{http::StatusCode, routing::post, Json, Router};
-use irq::{eip::block_algorithm, Line};
+use irq::querry::line_halfplane;
+use irq::Line;
 use serde::{Deserialize, Serialize};
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -19,7 +20,7 @@ async fn main() {
 
     // build our application
     let app = Router::new()
-        .route("/eip", post(handle))
+        .route("/irq", post(handle))
         .nest_service("/", ServeDir::new("./dist"))
         .layer(cors);
 
@@ -28,7 +29,7 @@ async fn main() {
     println!("Started server: http://{ADR}/");
     println!("crtl + c to close the server");
 
-    let serve =axum::serve(listener, app);
+    let serve = axum::serve(listener, app);
 
     open::that(format!("http://{ADR}/")).unwrap();
     serve.await.unwrap();
@@ -37,17 +38,19 @@ async fn main() {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct SLine {
     m: f64,
-    b: f64
+    b: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Data {
     lines: Vec<SLine>,
+    halfplane: SLine,
+    bounds_above: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Result {
-    result: Vec<Vec<f64>>
+    result: Vec<Vec<f64>>,
 }
 
 async fn handle(Json(data): Json<Data>) -> impl IntoResponse {
@@ -57,25 +60,23 @@ async fn handle(Json(data): Json<Data>) -> impl IntoResponse {
     for (i, line) in data.lines.iter().enumerate() {
         d.push(Line::new(line.m, line.b, i));
     }
-    let eip = block_algorithm(&mut d);
+    let boundary = Line::new(data.halfplane.m, data.halfplane.b, 0);
+    let hp = irq::HalfPlane::new(&boundary, data.bounds_above);
+    let res = line_halfplane(&mut d, &hp);
 
     let mut out: Vec<Vec<f64>> = Vec::new();
 
-    for i in 0..d.len() {
-        let idx = d[i].idx;
-
-        let x = eip.0[idx];
-        let mut a: Vec<f64> = vec![x];
-        a.push(d[i].y_at(x));
-        out.push(a);
-
-        let x = eip.1[idx];
-        let mut b: Vec<f64> = vec![x];
-        b.push(d[i].y_at(x));
-        out.push(b);
+    for (i, w) in res.iter().enumerate() {
+        let l_i = &d[i];
+        for j in w {
+            let l_j = &d[*j];
+            let x = l_i.intersection_with_line(l_j).unwrap();
+            let y = l_i.y_at(x);
+            out.push(vec![x, y]);
+        }
     }
 
-    let out = Result {result: out};
+    let out = Result { result: out };
 
     (StatusCode::OK, Json(out))
 }

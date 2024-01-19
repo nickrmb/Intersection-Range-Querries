@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 pub mod eip;
+pub mod selector;
+pub mod intersections;
+pub mod querry;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Line {
@@ -35,4 +38,25 @@ impl Line {
     pub fn y_at(&self, x: f64) -> f64 {
         self.m * x + self.b
     }
+}
+
+pub struct HalfPlane<'a> {
+    pub boundary: &'a Line,
+    pub bounds_above: bool
+}
+
+impl<'a> HalfPlane<'a> {
+
+    pub fn new(boundary: &'a Line, bounds_above: bool) -> HalfPlane {
+        HalfPlane {boundary, bounds_above}
+    }
+
+    pub fn contains_point(&self, x: f64, y: f64) -> bool {
+        let y_bound = self.boundary.m * x + self.boundary.b;
+        if self.bounds_above {
+            return y_bound >= y;
+        }
+        return y_bound <= y;
+    }
+
 }

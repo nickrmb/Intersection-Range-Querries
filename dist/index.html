@@ -12,7 +12,7 @@
 
 <body>
     <main>
-        <h1>IRQ - EIP</h1>
+        <h1>IRQ - Lines and Halfplanes</h1>
         <div style="display: flex; width: 100%;">
             <div style="margin-right: 40px;">
                 <canvas id="mcanvas" width="1800" height="1200"></canvas>
@@ -25,12 +25,20 @@
                     If the mouse position is close to the anchored position, the line creation is cancelled.<br>
                 </div>
                 <div class="item">
-                    <h3>EIP computation</h3>
-                    Each time a line is added the algorithm is executed and computed points are displayed using small red dots.
-                </div>
-                <div class="item">
                     <h3>Clear lines</h3>
                     Double click anywhere to remove all lines.
+                </div>
+                <div class="item">
+                    <h3>Insert a Halfplane</h3>
+                    The adding of a halfplane is similar to the creation of a line except that the <i>shift</i> button has to be hold simultaneously.<br>
+                    When trying to insert a second halfplane the previous one is destroyed.
+                </div><div>
+                    <h3>Remove the Halfplane</h3>
+                    Double click somewhere and hold the <i>shift</i> button simultaneously to destroy the halfplane.
+                </div>
+                <div>
+                    <h3>Switch bound area of Halfplane</h3>
+                    Click somewhere and hold the <i>Alt</i> (mac: ⌥ <i>option</i>) button simultaneously to switch the bounded area of the halfplane.
                 </div>
             </div>
         </div>

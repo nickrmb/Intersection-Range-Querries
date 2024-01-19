@@ -183,7 +183,9 @@ pub fn compute_right(lines: &mut Vec<Line>, sorted: bool) -> Vec<f64> {
     }
 
     let mut li = vec![f64::MIN; n];
-    li[lines[0].idx] = a.seg.last().unwrap().1;
+    if a.seg.len() > 0 {
+        li[lines[0].idx] = a.seg.last().unwrap().1;
+    }
 
     a.next_a(rev_instructions.pop().unwrap());
     b.next_b(&lines[0]);

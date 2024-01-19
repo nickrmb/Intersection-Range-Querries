@@ -1,4 +1,4 @@
-use irq::*;
+use ::irq::*;
 use rand::Rng;
 use std::time::Instant;
 
