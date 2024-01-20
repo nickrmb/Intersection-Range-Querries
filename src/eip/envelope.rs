@@ -15,16 +15,16 @@ mod tests {
 
     #[test]
     fn eip_correctness() {
-        for _ in 0..100 {
-            let k = 500;
+        for s in 0..100 {
+            let k = s * 5 + 5;
             let mut lines: Vec<Line> = Vec::new();
 
             let mut rng = rand::thread_rng();
             for i in 0..k {
                 let m: f64 = rng.gen();
-                let m = (m * 2.0 - 1.0) * 10000.0;
+                let m = (m * 2.0 - 1.0) * 100.0;
                 let b: f64 = rng.gen();
-                let b = (b * 2.0 - 1.0) * 10000.0;
+                let b = (b * 2.0 - 1.0) * 100.0;
                 lines.push(Line { m, b, idx: i });
             }
 

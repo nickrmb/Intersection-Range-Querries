@@ -27,7 +27,7 @@ Intersection Range Querries
 
 <p>
     <img src="img/irq_example.png" width="100%" style="margin-bottom: 10px">
-    <em>Example IRQ of lines and halfplanes.</em>
+    <em>Example IRQ result (red) of lines (blue) and a halfplane (green).</em>
 </p>
 
 To get a visual demo of the current progress and to get an idea of IRQ run the following command:
