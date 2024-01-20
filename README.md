@@ -50,7 +50,7 @@ The computation of all eip's is a key part of IRQ.
 <br>
 We have implemented two algorithms:
 - Block algorithm: $\mathcal{O}(n \log^2 n)$
-- Envelope algorithm: $\mathcal{O}(n)$
+- Envelope algorithm: $\mathcal{O}(n \log n)$ ($\mathcal{O}(n)$ if lines are sorted by slope)
 
 To check correctness we also implemented a simple $\mathcal{O}(n^2)$ brute force algorithm that computes all intersections and checks whether it is an eip of one of the intersecting lines.
 ```sh
